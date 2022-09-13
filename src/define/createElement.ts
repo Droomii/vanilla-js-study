@@ -2,16 +2,16 @@
 interface Node<T extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> {
     type: T;
     props: Partial<HTMLElementTagNameMap[T]>;
-    children: Node[];
+    children: (Node | string)[];
 }
 
 export function h<T extends keyof HTMLElementTagNameMap>(
     type: T,
-    props: Partial<HTMLElementTagNameMap[T]>, ...children: Node[]): Node<T> {
+    props: Partial<HTMLElementTagNameMap[T]>, ...children: (Node | string)[]): Node<T> {
     return { type, props, children: children.flat() };
 }
 
-export function createElement(node: ReturnType<typeof h>) {
+export function createElement(node: ReturnType<typeof h> | string) {
     if (typeof node === 'string') {
         return document.createTextNode(node);
     }
