@@ -4,6 +4,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     entry: './src/index.ts',
+    resolve: {
+        extensions: ['.ts', '.js']
+    },
     module: {
         rules: [
             {
@@ -20,7 +23,7 @@ module.exports = {
                         options: {
                             url: false,
                             modules: {
-                                localIdentName: '[path][name]__[local]'
+                                localIdentName: '[name]__[local]__[hash:base64:5]'
                             }
                         }
                     },

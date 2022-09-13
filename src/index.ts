@@ -1,11 +1,9 @@
-import styles from './style.module.scss';
+import styles from './index.scss';
+import {createElement, h} from './define/createElement';
 
-function component() {
-    const element: HTMLDivElement = document.createElement('div');
+const el = createElement(
+    h('div', {}
+    )
+);
 
-    element.innerHTML = 'Hello World';
-    element.className = styles.component;
-    return element;
-}
-
-document.body.appendChild(component());
+document.body.appendChild(el);
