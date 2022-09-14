@@ -1,9 +1,4 @@
-import styles from './index.scss';
-import {createElement, h} from './define/createElement';
+import './index.scss';
+import App from './App';
 
-const el = createElement(
-    h('div', {}, '하이'
-    )
-);
-
-document.body.appendChild(el);
+document.body.appendChild(App());
