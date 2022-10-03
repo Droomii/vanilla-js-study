@@ -5,7 +5,7 @@ function App() {
     const hel = Flex();
 
     const haseyo = hel('하세요');
-    haseyo.saySomething('hi');
+    haseyo.saySomething('<div style="color:red">whattttttt</div>');
 
     return container(
         hel('안녕', 'ㅋㅋㅋ', hel('sdfdf')),

@@ -29,8 +29,8 @@ function Flex(options?: IFlexOptions) {
             });
         },
         methods: {
-            saySomething(something: string) {
-                console.log(something);
+            saySomething(this: HTMLDivElement, something: string) {
+                this.innerHTML = something;
             }
         }
     });
