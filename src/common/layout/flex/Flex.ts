@@ -8,8 +8,14 @@ interface IFlexOptions extends ComponentOptions {
     justify?: 'center' | 'start' | 'end';
 }
 
+interface IFlexMethods {
+    saySomething: (something: string) => void;
+}
+
 function Flex(options?: IFlexOptions) {
-    const render = Component('div', {
+
+
+    const render = Component<IFlexMethods>('div', {
         ...options,
         classNames: [...options?.classNames || [], styles.flex],
         optionHandler: (el) => {
@@ -21,14 +27,15 @@ function Flex(options?: IFlexOptions) {
 
                 value && el.classList.add(styles[`${attr}-${value}`]);
             });
+        },
+        methods: {
+            saySomething(something: string) {
+                console.log(something);
+            }
         }
     });
 
-    const saySomething = (something: string) => {
-        console.log(something);
-    };
-
-    return Object.assign(render, {saySomething});
+    return render;
 }
 
 export default Flex;

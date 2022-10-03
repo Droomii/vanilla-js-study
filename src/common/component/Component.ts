@@ -1,24 +1,26 @@
-export interface ComponentOptions {
+export interface ComponentOptions<Methods = {}> {
     classNames?: string[];
     optionHandler?: (el: HTMLElement) => void;
+    methods?: Methods;
 }
 
-function Component<O = unknown>(tag: keyof HTMLElementTagNameMap, options?: ComponentOptions & O) {
+function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: ComponentOptions<Methods>) {
 
-    return (...children: (string | Node)[]) => {
+    return (...children: (string | Node)[]): HTMLElementTagNameMap[typeof tag] & Methods => {
         const el = document.createElement(tag);
 
         if (options) {
-            const {classNames, optionHandler} = options;
+            const {classNames, optionHandler, methods} = options;
             if (classNames) {
                 el.className = classNames.join(' ');
             }
 
             optionHandler && optionHandler(el);
+            methods && Object.assign(el, methods);
         }
 
         el.append(...children);
-        return el;
+        return el as HTMLElementTagNameMap[typeof tag] & Methods;
     };
 }
 
