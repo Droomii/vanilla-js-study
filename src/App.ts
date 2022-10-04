@@ -6,8 +6,8 @@ function App() {
     const bool = new State(false);
     const container = Flex({justify: 'center', direction: 'column', align: 'center'});
     const hel = Flex();
-    const haseyo = Flex()('하세요');
-    bool.addEffect((val) => {
+    const haseyo = hel('하세요');
+    haseyo.listen(bool, (val) => {
         haseyo.innerText = val ? '트루' : '폴스';
     });
 
