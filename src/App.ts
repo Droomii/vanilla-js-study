@@ -1,15 +1,26 @@
 import Flex from './common/layout/flex/Flex';
+import Button from './common/component/Button';
+import State from './define/State';
 
 function App() {
+    const bool = new State(false);
     const container = Flex({justify: 'center', direction: 'column', align: 'center'});
     const hel = Flex();
+    const haseyo = Flex()('하세요');
+    bool.addEffect((val) => {
+        haseyo.innerText = val ? '트루' : '폴스';
+    });
 
-    const haseyo = hel('하세요');
-    haseyo.saySomething('<div style="color:red">whattttttt</div>');
+    const button = Button({
+        onClick() {
+            bool.set(!bool.value);
+        }
+    })('클릭해보세요');
 
     return container(
         hel('안녕', 'ㅋㅋㅋ', hel('sdfdf')),
-        haseyo
+        haseyo,
+        button
     );
 }
 

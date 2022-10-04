@@ -9,13 +9,11 @@ interface IFlexOptions extends ComponentOptions {
 }
 
 interface IFlexMethods {
-    saySomething: (something: string) => void;
+    saySomething(something: string): void;
 }
 
 function Flex(options?: IFlexOptions) {
-
-
-    const render = Component<IFlexMethods>('div', {
+    return Component<IFlexMethods>('div', {
         ...options,
         classNames: [...options?.classNames || [], styles.flex],
         optionHandler: (el) => {
@@ -34,8 +32,6 @@ function Flex(options?: IFlexOptions) {
             }
         }
     });
-
-    return render;
 }
 
 export default Flex;
