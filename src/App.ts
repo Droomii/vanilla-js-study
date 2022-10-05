@@ -5,16 +5,16 @@ import ListenTest from './common/component/ListenTest';
 
 function App() {
     const bool = new State(false);
-    const listenNumber = new State(0);
+    const listenNumbers = Array(10000).fill(0).map((v, i) => new State(i));
     const container = Flex({justify: 'center', direction: 'column', align: 'center'});
     const hel = Flex({direction: 'column'});
     const hel2 = Flex({direction: 'column'});
-    const listen = ListenTest({listenBool: bool, listenNumber});
+    const listen = ListenTest({listenBool: bool, listenNumbers});
 
     const button = Button({
-        onClick() {
+        async onClick() {
             bool.set(!bool.value);
-            listenNumber.set(listenNumber.value + 1);
+            listenNumbers.forEach(v => v.set(v.value + 1));
         }
     })('클릭해보세요');
 

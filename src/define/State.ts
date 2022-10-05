@@ -1,5 +1,7 @@
+import {PrepareRenderFunc} from '../common/component/Component';
+
 class State<T> {
-    private readonly _effects: (() => Promise<() => void>)[] = [];
+    private readonly _effects: PrepareRenderFunc[] = [];
 
     constructor(private _value: T) {
     }
@@ -8,14 +10,14 @@ class State<T> {
         if (this._value === val) return;
         this._value = val;
         Promise.all(this._effects.map(v => v()))
-            .then(v => v.map(v => v()));
+            .then(v => v.map(v => v && v()));
     }
 
     get value() {
         return this._value;
     }
 
-    addEffect(...effects: (() => Promise<() => void>)[]) {
+    addEffect(...effects: PrepareRenderFunc[]) {
         this._effects.push(...effects);
     }
 
