@@ -1,20 +1,26 @@
 class State<T> {
-    private readonly _effects: ((val: T) => void)[] = [];
+    private readonly _effects: (() => Promise<() => void>)[] = [];
+
     constructor(private _value: T) {
     }
 
     set(val: T) {
         if (this._value === val) return;
         this._value = val;
-        this._effects.forEach(v => v(val));
+        Promise.all(this._effects.map(v => v()))
+            .then(v => v.map(v => v()));
     }
 
     get value() {
         return this._value;
     }
 
-    addEffect(...effects: ((val: T) => void)[]) {
+    addEffect(...effects: (() => Promise<() => void>)[]) {
         this._effects.push(...effects);
+    }
+
+    toString() {
+        return String(this._value);
     }
 }
 

@@ -8,29 +8,22 @@ interface IFlexOptions extends ComponentOptions {
     justify?: 'center' | 'start' | 'end';
 }
 
-interface IFlexMethods {
-    saySomething(something: string): void;
-}
-
 function Flex(options?: IFlexOptions) {
-    return Component<IFlexMethods>('div', {
-        ...options,
-        classNames: [...options?.classNames || [], styles.flex],
-        optionHandler: (el) => {
-            options && Object.entries(options).forEach(([attr, value]) => {
-                if (typeof value === 'boolean' && value) {
-                    el.classList.add(styles[attr]);
-                    return;
-                }
+    const flexClasses: string[] = [];
 
-                value && el.classList.add(styles[`${attr}-${value}`]);
-            });
-        },
-        methods: {
-            saySomething(this: HTMLDivElement, something: string) {
-                this.innerHTML = something;
-            }
+    options && Object.entries(options).forEach(([attr, value]) => {
+        if (typeof value === 'boolean' && value) {
+            flexClasses.push(styles[attr]);
+            return;
         }
+
+        value && flexClasses.push(styles[`${attr}-${value}`]);
+
+    });
+
+    return Component('div', {
+        ...options,
+        classNames: [...options?.classNames || [], styles.flex, ...flexClasses],
     });
 }
 
