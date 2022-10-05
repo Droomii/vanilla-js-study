@@ -32,7 +32,9 @@ function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: Componen
         };
 
         const prepareRender: PrepareRenderFunc = async () => {
-            if (isRenderPrepared) return;
+            if (isRenderPrepared) {
+                return;
+            }
             isRenderPrepared = true;
             return render;
         };

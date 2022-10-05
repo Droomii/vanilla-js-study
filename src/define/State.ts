@@ -10,7 +10,7 @@ class State<T> {
         if (this._value === val) return;
         this._value = val;
         Promise.all(this._effects.map(v => v()))
-            .then(v => v.map(v => v && v()));
+            .then(v => v.forEach(v => v && v()));
     }
 
     get value() {
