@@ -1,17 +1,19 @@
-import {Children, ComponentOptions} from './Component';
-import State from '../../define/State';
 import Flex from '../layout/flex/Flex';
+import Store from '../../store/Store';
+import Button from './Button';
+import State from '../../define/State';
 
-interface Options extends ComponentOptions {
-    listenBool: State<boolean>;
-    listenNumbers: State<number>[];
-    listenNumber: State<number>;
-}
+function ListenTest(num: State<number>) {
+    const flex = Flex({listen: [num]});
+    let clicked = false;
+    const button = Button({
+        async onClick() {
+            clicked = true;
+            num.set(val => val + 1);
+        },
+    });
 
-function ListenTest({listenBool, listenNumbers, listenNumber}: Options) {
-    const flex = Flex({listen: [listenBool, listenNumber, ...listenNumbers]});
-
-    return (...children: Children) => flex(() => `${listenBool} and ${listenNumber}`, ...children);
+    return flex(() => `number : ${num} `, () => button((clicked ? '클릭됨' : '클릭해보세요')));
 }
 
 export default ListenTest;
