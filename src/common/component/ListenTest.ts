@@ -1,5 +1,4 @@
 import Flex from '../layout/flex/Flex';
-import Store from '../../store/Store';
 import Button from './Button';
 import State from '../../define/State';
 
