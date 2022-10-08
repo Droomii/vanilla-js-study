@@ -4,11 +4,17 @@ const isFunction = <T>(val: T | ((val: T) => T)): val is (val: T) => T => {
     return typeof val === 'function';
 };
 
+export interface StateFormat<T> {
+    formatFunc: (val: T) => string;
+    state: State<T>;
+}
+
 class State<T> {
     private readonly _effects: PrepareRenderFunc[] = [];
-
-    constructor(private _value: T) {
-    }
+    constructor(
+        private _value: T,
+        private _toString = (val: T) => String(val)
+    ) {}
 
     set(val: T | ((val: T) => T)) {
         const value = isFunction(val) ? val(this._value) : val;
@@ -28,7 +34,11 @@ class State<T> {
     }
 
     toString() {
-        return String(this._value);
+        return this._toString(this._value);
+    }
+
+    format(formatFunc: (val: T) => string): StateFormat<T> {
+        return {state: this, formatFunc};
     }
 }
 

@@ -1,4 +1,5 @@
-import State from '../../define/State';
+import State, {StateFormat} from '../../define/State';
+import {Observant} from "../../define/observant";
 
 export interface ComponentOptions<Methods = {}> {
     classNames?: string[];
@@ -8,13 +9,17 @@ export interface ComponentOptions<Methods = {}> {
 }
 
 type ChildNode = string | Node;
-export type Children = (ChildNode | (() => ChildNode))[];
+export type Children = (ChildNode | (() => ChildNode) | State<unknown> | Observant | StateFormat<unknown>)[];
 export type RenderFunc =  () => void;
 export type PrepareRenderFunc =  () => Promise<undefined | RenderFunc>
 
-function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: ComponentOptions<Methods>) {
+interface ComponentRenderer<T extends keyof HTMLElementTagNameMap, Methods> {
+    (...children: Children): HTMLElementTagNameMap[T] & Methods;
+}
+
+function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: ComponentOptions<Methods>): ComponentRenderer<typeof tag, Methods> {
     let count = 0;
-    return (...children: Children): HTMLElementTagNameMap[typeof tag] & Methods => {
+    return (...children) => {
         const el = document.createElement(tag);
         let isRenderPrepared = false;
         const render: RenderFunc = () => {
@@ -27,7 +32,29 @@ function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: Componen
                 optionHandler && optionHandler(el);
                 methods && Object.assign(el, methods);
             }
-            el.replaceChildren(...children.map(v => typeof v === 'function' ? v() : v), String(count++));
+            el.replaceChildren(...children.map(v => {
+                if (typeof v === 'function') return v();
+                if (v instanceof State) {
+                    v.addEffect(prepareRender);
+                    return v.toString();
+                }
+
+                if (typeof v === 'string') {
+                    return v;
+                }
+
+                if ('states' in v) {
+                    v.states.forEach(v => v.addEffect(prepareRender));
+                    return v.strings.map((str, i) => str + (v.states[i] ?? '')).join('');
+                }
+
+                if ('formatFunc' in v) {
+                    v.state.addEffect(prepareRender);
+                    return v.formatFunc(v.state.value);
+                }
+
+                return v;
+            }), String(count++));
             isRenderPrepared = false;
         };
 
