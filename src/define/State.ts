@@ -7,6 +7,7 @@ const isFunction = <T>(val: T | ((val: T) => T)): val is (val: T) => T => {
 export interface StateFormat<T> {
     formatFunc: (val: T) => string;
     state: State<T>;
+    toString(): string;
 }
 
 class State<T> {
@@ -30,7 +31,10 @@ class State<T> {
     }
 
     addEffect(...effects: PrepareRenderFunc[]) {
-        this._effects.push(...effects);
+        effects.forEach(v => {
+            if (this._effects.includes(v)) return;
+            this._effects.push(v);
+        });
     }
 
     toString() {
@@ -38,7 +42,11 @@ class State<T> {
     }
 
     format(formatFunc: (val: T) => string): StateFormat<T> {
-        return {state: this, formatFunc};
+        return {
+            state: this,
+            formatFunc,
+            toString: () => formatFunc(this._value)
+        };
     }
 }
 

@@ -2,7 +2,7 @@ import State, {StateFormat} from '../../define/State';
 import {Observant} from "../../define/observant";
 
 export interface ComponentOptions<Methods = {}> {
-    classNames?: string[];
+    classNames?: (string | StateFormat<unknown>)[];
     optionHandler?: (el: HTMLElement) => void;
     methods?: Methods;
     listen?: State<unknown>[];
@@ -13,12 +13,11 @@ export type Children = (ChildNode | (() => ChildNode) | State<unknown> | Observa
 export type RenderFunc =  () => void;
 export type PrepareRenderFunc =  () => Promise<undefined | RenderFunc>
 
-interface ComponentRenderer<T extends keyof HTMLElementTagNameMap, Methods> {
+export interface ComponentRenderer<T extends keyof HTMLElementTagNameMap, Methods> {
     (...children: Children): HTMLElementTagNameMap[T] & Methods;
 }
 
-function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: ComponentOptions<Methods>): ComponentRenderer<typeof tag, Methods> {
-    let count = 0;
+function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, options?: ComponentOptions<Methods>): ComponentRenderer<typeof tag, Methods> {
     return (...children) => {
         const el = document.createElement(tag);
         let isRenderPrepared = false;
@@ -26,7 +25,15 @@ function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: Componen
             if (options) {
                 const {classNames, optionHandler, methods} = options;
                 if (classNames) {
-                    el.className = classNames.join(' ');
+                    el.className = classNames
+                        .filter(v => v)
+                        .map(v => {
+                            if (typeof v !== 'string') {
+                                v.state.addEffect(prepareRender);
+                            }
+                            return String(v);
+                        })
+                        .filter(v => v).join(' ');
                 }
 
                 optionHandler && optionHandler(el);
@@ -54,7 +61,7 @@ function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: Componen
                 }
 
                 return v;
-            }), String(count++));
+            }));
             isRenderPrepared = false;
         };
 
@@ -72,7 +79,7 @@ function Component<Methods>(tag: keyof HTMLElementTagNameMap, options?: Componen
 
         render();
 
-        return el as HTMLElementTagNameMap[typeof tag] & Methods;
+        return el as HTMLElementTagNameMap[T] & Methods;
     };
 }
 

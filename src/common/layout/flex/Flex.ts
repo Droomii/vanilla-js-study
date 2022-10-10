@@ -16,12 +16,10 @@ function Flex(options?: IFlexOptions) {
             flexClasses.push(styles[attr]);
             return;
         }
-
         value && flexClasses.push(styles[`${attr}-${value}`]);
-
     });
 
-    return Component('div', {
+    return Component<'div', {}>('div', {
         ...options,
         classNames: [...options?.classNames || [], styles.flex, ...flexClasses],
     });

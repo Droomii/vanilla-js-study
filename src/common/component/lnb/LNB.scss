@@ -1,0 +1,12 @@
+.lnb {
+  width: 200px;
+  background: aquamarine;
+
+  > .menu {
+    padding: 10px;
+
+    &.active {
+      font-weight: bold;
+    }
+  }
+}
