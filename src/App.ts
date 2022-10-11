@@ -1,26 +1,19 @@
-import Flex from './common/layout/flex/Flex';
-import ListenTest from './common/component/ListenTest';
-import Store from './store/Store';
 import Layout from "./common/component/layout/Layout";
-import styles from "./App.scss";
+import MainPage from "./page/main/MainPage";
+import Router from "./page/Router";
+import Menu1 from "./page/menu1/Menu1";
+import Menu2 from "./page/menu2/Menu2";
 
 function App() {
-    const container = Flex({classNames: [styles.container], direction: 'column', align: 'center'});
-    const hel = Flex({direction: 'column'});
-    const hel2 = Flex({direction: 'column'});
     const layout = Layout();
+    const router = Router({
+        '/main': MainPage,
+        '/menu1': Menu1,
+        '/menu2': Menu2
+    });
 
     return (
-        layout(
-            container(
-                hel(
-                    '안녕',
-                    'ㅋㅋㅋ',
-                    hel2('sdfdf'),
-                ),
-                ...Store.numbers.map(v => ListenTest(v)),
-            ),
-        )
+        layout(router)
     );
 }
 

@@ -3,8 +3,13 @@ import Flex from "../../layout/flex/Flex";
 import styles from "./LNB.scss";
 import LNBElement from "./LNBElement";
 
+export interface MenuElement {
+    name: string;
+    url: string;
+}
+
 interface LNBOptions extends ComponentOptions {
-    menus: string[];
+    menus: MenuElement[];
 }
 
 function LNB(options: LNBOptions) {

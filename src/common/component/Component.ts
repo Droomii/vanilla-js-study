@@ -9,7 +9,8 @@ export interface ComponentOptions<Methods = {}> {
 }
 
 type ChildNode = string | Node;
-export type Children = (ChildNode | (() => ChildNode) | State<unknown> | Observant | StateFormat<unknown>)[];
+export type Child = ChildNode | (() => ChildNode) | State<unknown> | Observant | StateFormat<unknown>
+export type Children = Child[];
 export type RenderFunc =  () => void;
 export type PrepareRenderFunc =  () => Promise<undefined | RenderFunc>
 

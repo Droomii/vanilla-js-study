@@ -1,22 +1,27 @@
 import Flex from "../../layout/flex/Flex";
 import styles from "./LNB.scss";
 import Store from "../../../store/Store";
+import {MenuElement} from "./LNB";
 
-function LNBElement(menuName: string) {
+function LNBElement({name, url}: MenuElement) {
     const {activeMenu} = Store;
+
+    const handleClick = () => {
+        window.history.pushState({}, '', `${url}`);
+        activeMenu.set(url);
+    };
+
     const wrap = Flex({
         classNames: [
             styles.menu,
-            activeMenu.format(val => menuName === val ? styles.active : '')
+            activeMenu.format(val => url === val ? styles.active : ''),
         ],
         optionHandler: el => {
-            el.addEventListener('click', () => {
-                activeMenu.set(menuName);
-            });
+            el.addEventListener('click', handleClick);
         },
     });
 
-    return wrap(menuName);
+    return wrap(name);
 }
 
 export default LNBElement;
