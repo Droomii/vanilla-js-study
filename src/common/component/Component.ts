@@ -31,7 +31,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
     return (...children) => {
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
         el.destroy = () => {
-            // listeningStates.forEach(v => v.removeListener(prepareRender));
+            listeningStates.forEach(v => v.removeListener(prepareRender));
             children.forEach(v => (v as DestroyableElement<T>).destroy?.());
         };
 
