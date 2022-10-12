@@ -4,7 +4,7 @@ import styles from "./Layout.scss";
 import LNB from "../lnb/LNB";
 
 function Layout(): ComponentRenderer<'div', {}> {
-    const body = Flex({classNames: [styles.layout]});
+    const body = Flex({classNames: [styles.layout], root: true, debug: 'body'});
     const content = Flex({classNames: [styles.content]});
     const lnb = LNB({
         menus: [

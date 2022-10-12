@@ -12,17 +12,19 @@ export interface StateFormat<T> {
 }
 
 class State<T> {
-    private readonly _effects: PrepareRenderFunc[] = [];
+    private _effects: PrepareRenderFunc[] = [];
     constructor(
         private _value: T,
         private _toString = (val: T) => String(val)
-    ) {}
+    ) {
+    }
 
     set(val: T | ((val: T) => T)) {
         const value = isFunction(val) ? val(this._value) : val;
 
         if (this._value === value) return;
         this._value = value;
+        this._effects = this._effects.filter(v => v.el.isConnected);
         Promise.all(this._effects.map(v => v()))
             .then(v => v.forEach(v => v && v()));
     }
@@ -36,6 +38,13 @@ class State<T> {
             if (this._effects.includes(v)) return;
             this._effects.push(v);
         });
+    }
+
+    removeEffect(effect: PrepareRenderFunc) {
+        const idx = this._effects.indexOf(effect);
+        if (idx > -1) {
+            this._effects.splice(idx, 1);
+        }
     }
 
     toString() {

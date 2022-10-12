@@ -10,7 +10,7 @@ function Button(options?: Options) {
         optionHandler(el) {
             if (options) {
                 const {onClick} = options;
-                onClick && el.addEventListener('click', onClick);
+                !el.isConnected && onClick && el.addEventListener('click', onClick);
             }
         }
     });
