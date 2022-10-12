@@ -12,7 +12,7 @@ export interface StateFormat<T> {
 }
 
 class State<T> {
-    private _effects: PrepareRenderFunc[] = [];
+    private _listeners: PrepareRenderFunc[] = [];
     constructor(
         private _value: T,
         private _toString = (val: T) => String(val)
@@ -24,8 +24,11 @@ class State<T> {
 
         if (this._value === value) return;
         this._value = value;
-        this._effects = this._effects.filter(v => v.el.isConnected);
-        Promise.all(this._effects.map(v => v()))
+        if (this._listeners.some(v => !v.el.isConnected)) {
+            console.warn('DOM lead detected.');
+        }
+        this._listeners = this._listeners.filter(v => v.el.isConnected);
+        Promise.all(this._listeners.map(v => v()))
             .then(v => v.forEach(v => v && v()));
     }
 
@@ -33,17 +36,17 @@ class State<T> {
         return this._value;
     }
 
-    addEffect(...effects: PrepareRenderFunc[]) {
+    addListener(...effects: PrepareRenderFunc[]) {
         effects.forEach(v => {
-            if (this._effects.includes(v)) return;
-            this._effects.push(v);
+            if (this._listeners.includes(v)) return;
+            this._listeners.push(v);
         });
     }
 
-    removeEffect(effect: PrepareRenderFunc) {
-        const idx = this._effects.indexOf(effect);
+    removeListener(effect: PrepareRenderFunc) {
+        const idx = this._listeners.indexOf(effect);
         if (idx > -1) {
-            this._effects.splice(idx, 1);
+            this._listeners.splice(idx, 1);
         }
     }
 

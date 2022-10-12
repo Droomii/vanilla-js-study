@@ -31,11 +31,11 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
     return (...children) => {
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
         el.destroy = () => {
-            states.forEach(v => v.removeEffect(prepareRender));
+            // listeningStates.forEach(v => v.removeListener(prepareRender));
             children.forEach(v => (v as DestroyableElement<T>).destroy?.());
         };
 
-        const states = new Set<State<unknown>>();
+        const listeningStates = new Set<State<unknown>>();
         let isRenderPrepared = false;
 
         const render: RenderFunc = () => {
@@ -46,8 +46,8 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
                         .filter(v => v)
                         .map(v => {
                             if (typeof v !== 'string') {
-                                v.state.addEffect(prepareRender);
-                                states.add(v.state);
+                                v.state.addListener(prepareRender);
+                                listeningStates.add(v.state);
                             }
                             return String(v);
                         })
@@ -60,8 +60,8 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
             el.replaceChildren(...children.map(v => {
                 if (typeof v === 'function') return v();
                 if (v instanceof State) {
-                    states.add(v);
-                    v.addEffect(prepareRender);
+                    listeningStates.add(v);
+                    v.addListener(prepareRender);
                     return v.toString();
                 }
 
@@ -71,15 +71,15 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
 
                 if ('states' in v) {
                     v.states.forEach(v => {
-                        states.add(v);
-                        v.addEffect(prepareRender);
+                        listeningStates.add(v);
+                        v.addListener(prepareRender);
                     });
                     return v.strings.map((str, i) => str + (v.states[i] ?? '')).join('');
                 }
 
                 if ('formatFunc' in v) {
-                    states.add(v.state);
-                    v.state.addEffect(prepareRender);
+                    listeningStates.add(v.state);
+                    v.state.addListener(prepareRender);
                     return v.formatFunc(v.state.value);
                 }
 
@@ -102,7 +102,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
 
             options.listen.forEach(v => {
 
-                v.addEffect(prepareRender);
+                v.addListener(prepareRender);
             });
         }
 
