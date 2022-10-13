@@ -31,6 +31,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
     return (...children) => {
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
         el.destroy = () => {
+            debug && console.log('destroy', debug);
             listeningStates.forEach(v => v.removeListener(prepareRender));
             children.forEach(v => (v as DestroyableElement<T>).destroy?.());
         };
@@ -39,6 +40,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
         let isRenderPrepared = false;
 
         const render: RenderFunc = () => {
+            debug && console.log('render', debug);
             if (options) {
                 const {classNames, optionHandler, methods} = options;
                 if (classNames) {
@@ -55,6 +57,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
                 }
 
                 optionHandler && optionHandler(el);
+                debug && el.classList.add(`debug-${debug}`);
                 methods && Object.assign(el, methods);
             }
             el.replaceChildren(...children.map(v => {

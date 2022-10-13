@@ -25,7 +25,7 @@ class State<T> {
         if (this._value === value) return;
         this._value = value;
         if (this._listeners.some(v => !v.el.isConnected)) {
-            console.warn('DOM lead detected.');
+            console.warn('DOM leak detected.');
         }
         this._listeners = this._listeners.filter(v => v.el.isConnected);
         Promise.all(this._listeners.map(v => v()))

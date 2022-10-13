@@ -3,14 +3,13 @@ import Button from './Button';
 import State from '../../define/State';
 
 function ListenTest(num: State<number>) {
-    const flex = Flex({debug: 'listenTest'});
+    const flex = Flex();
     let clicked = new State(false);
     const button = Button({
         onClick() {
             clicked.set(true);
             num.set(val => val + 1);
         },
-        debug: 'listenButton'
     });
 
     return flex(
