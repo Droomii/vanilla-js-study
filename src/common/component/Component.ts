@@ -110,8 +110,8 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
         }
 
         render();
-        const observer = new MutationObserver((a, b) => {
-            a.forEach(v => {
+        const observer = new MutationObserver((mutation) => {
+            mutation.forEach(v => {
                 v.removedNodes.forEach(v => {
                     (v as DestroyableElement<T>).destroy?.();
                 });
