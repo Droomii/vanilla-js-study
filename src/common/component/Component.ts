@@ -19,7 +19,7 @@ export interface PrepareRenderFunc<T extends HTMLElement = HTMLElement> {
     el: T;
 }
 
-type DestroyableElement<T extends keyof HTMLElementTagNameMap> = HTMLElementTagNameMap[T] & {destroy: () => void}
+type DestroyableElement<T extends keyof HTMLElementTagNameMap> = HTMLElementTagNameMap[T] & {cleanup: () => void}
 
 export interface ComponentRenderer<T extends keyof HTMLElementTagNameMap, Methods> {
     (...children: Children): DestroyableElement<T> & Methods
@@ -30,10 +30,10 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
 
     return (...children) => {
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
-        el.destroy = () => {
+        el.cleanup = () => {
             debug && console.log('destroy', debug);
             listeningStates.forEach(v => v.removeListener(prepareRender));
-            children.forEach(v => (v as DestroyableElement<T>).destroy?.());
+            children.forEach(v => (v as DestroyableElement<T>).cleanup?.());
         };
 
         const listeningStates = new Set<State<unknown>>();
@@ -113,7 +113,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
         const observer = new MutationObserver((mutation) => {
             mutation.forEach(v => {
                 v.removedNodes.forEach(v => {
-                    (v as DestroyableElement<T>).destroy?.();
+                    (v as DestroyableElement<T>).cleanup?.();
                 });
             });
         });
