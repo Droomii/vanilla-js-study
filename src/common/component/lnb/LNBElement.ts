@@ -16,7 +16,7 @@ function LNBElement({name, url}: MenuElement) {
             styles.menu,
             activeMenu.format(val => url === val ? styles.active : ''),
         ],
-        optionHandler: el => {
+        onMount: el => {
             el.addEventListener('click', handleClick);
         },
     });

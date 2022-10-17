@@ -3,7 +3,9 @@ import {Observant} from "../../define/observant";
 
 export interface ComponentOptions<Methods = {}> {
     classNames?: (string | StateFormat<unknown>)[];
-    optionHandler?: (el: HTMLElement) => void;
+    onRender?: (el: HTMLElement) => void;
+    onMount?: (el: HTMLElement) => void;
+    onUnmount?: (el: HTMLElement) => void;
     methods?: Methods;
     listen?: State<unknown>[];
     debug?: string;
@@ -30,10 +32,12 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
 
     return (...children) => {
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
+        const onUnmount = options?.onUnmount;
         el.cleanup = () => {
             debug && console.log('destroy', debug);
             listeningStates.forEach(v => v.removeListener(prepareRender));
             children.forEach(v => (v as DestroyableElement<T>).cleanup?.());
+            onUnmount && onUnmount(el);
         };
 
         const listeningStates = new Set<State<unknown>>();
@@ -42,7 +46,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
         const render: RenderFunc = () => {
             debug && console.log('render', debug);
             if (options) {
-                const {classNames, optionHandler, methods} = options;
+                const {classNames, onRender, methods, onMount, onUnmount} = options;
                 if (classNames) {
                     el.className = classNames
                         .filter(v => v)
@@ -55,8 +59,8 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
                         })
                         .filter(v => v).join(' ');
                 }
-
-                optionHandler && optionHandler(el);
+                !el.isConnected && onMount && onMount(el);
+                onRender && onRender(el);
                 debug && el.classList.add(`debug-${debug}`);
                 methods && Object.assign(el, methods);
             }

@@ -7,7 +7,7 @@ interface Options extends ComponentOptions {
 function Button(options?: Options) {
     return Component('button', {
         ...options,
-        optionHandler(el) {
+        onRender(el) {
             if (options) {
                 const {onClick} = options;
                 !el.isConnected && onClick && el.addEventListener('click', onClick);
