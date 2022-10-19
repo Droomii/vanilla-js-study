@@ -7,7 +7,7 @@ export interface ComponentOptions<Methods = {}> {
     onMount?: (el: HTMLElement) => void;
     onUnmount?: (el: HTMLElement) => void;
     methods?: Methods;
-    listen?: State<unknown>[];
+    listen?: {[key: string]: State<unknown>};
     debug?: string;
     root?: boolean;
 }
@@ -107,8 +107,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
 
         if (options?.listen) {
 
-            options.listen.forEach(v => {
-
+            Object.values(options.listen).forEach(v => {
                 v.addListener(prepareRender);
             });
         }

@@ -3,8 +3,8 @@ import Button from './Button';
 import State from '../../define/State';
 
 function ListenTest(num: State<number>) {
-    const flex = Flex();
     let clicked = new State(false);
+    const flex = Flex({listen: {clicked, num}});
     const button = Button({
         onClick() {
             clicked.set(true);
