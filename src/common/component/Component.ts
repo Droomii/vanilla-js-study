@@ -34,7 +34,7 @@ function Component<T extends keyof HTMLElementTagNameMap, Methods>(tag: T, optio
         const el: DestroyableElement<T> = document.createElement(tag) as DestroyableElement<T>;
         const onUnmount = options?.onUnmount;
         el.cleanup = () => {
-            debug && console.log('destroy', debug);
+            debug && console.log('cleanup', debug);
             listeningStates.forEach(v => v.removeListener(prepareRender));
             children.forEach(v => (v as DestroyableElement<T>).cleanup?.());
             onUnmount && onUnmount(el);
