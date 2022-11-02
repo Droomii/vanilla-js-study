@@ -1,20 +1,30 @@
-import Layout from "./common/component/layout/Layout";
-import MainPage from "./page/main/MainPage";
-import Router from "./page/Router";
-import Menu1 from "./page/menu1/Menu1";
-import Menu2 from "./page/menu2/Menu2";
+import Store from './store/Store';
+import Watcher from './define/Watcher';
 
 function App() {
-    const layout = Layout();
-    const router = Router({
-        '/main': MainPage,
-        '/menu1': Menu1,
-        '/menu2': Menu2
+    const {activeMenu, numbers} = Store;
+
+
+
+    const buttons = numbers.map(num => {
+        const onClick = () => {
+            num.set(v => v + 1);
+        };
+
+        return Watcher('button', {num}, (el, {num}) => {
+            el.innerHTML = `${num}번 클릭함`;
+            el.style.display = 'block';
+            el.addEventListener('click', onClick);
+            console.log('render');
+        });
     });
 
-    return (
-        layout(router)
-    );
+    return Watcher('div', {activeMenu}, (el, {activeMenu}) => {
+        el.replaceChildren(
+            `현재 path는 ${activeMenu}입니다.`,
+            ...buttons
+        );
+    });
 }
 
 export default App;

@@ -1,18 +1,12 @@
-import {PrepareRenderFunc} from '../common/component/Component';
+import {RenderFunction} from './Watcher';
 
 const isFunction = <T>(val: T | ((val: T) => T)): val is (val: T) => T => {
     return typeof val === 'function';
 };
 
-export interface StateFormat<T> {
-    formatFunc: (val: T) => string | Node;
-    state: State<T>;
-    render(): string | Node;
-    toString(): string;
-}
-
 class State<T> {
-    private _listeners: PrepareRenderFunc[] = [];
+    private _listeners: RenderFunction[] = [];
+
     constructor(
         private _value: T,
         private _toString = (val: T) => String(val)
@@ -28,22 +22,21 @@ class State<T> {
             console.warn('DOM leak detected.');
         }
         this._listeners = this._listeners.filter(v => v.el.isConnected);
-        Promise.all(this._listeners.map(v => v()))
-            .then(v => v.forEach(v => v && v()));
+        Promise.all(this._listeners.map(v => v()));
     }
 
     get value() {
         return this._value;
     }
 
-    addListener(...effects: PrepareRenderFunc[]) {
+    addListener(...effects: RenderFunction[]) {
         effects.forEach(v => {
             if (this._listeners.includes(v)) return;
             this._listeners.push(v);
         });
     }
 
-    removeListener(effect: PrepareRenderFunc) {
+    removeListener(effect: RenderFunction) {
         const idx = this._listeners.indexOf(effect);
         if (idx > -1) {
             this._listeners.splice(idx, 1);
@@ -52,15 +45,6 @@ class State<T> {
 
     toString() {
         return this._toString(this._value);
-    }
-
-    format(formatFunc: (val: T) => string | Node): StateFormat<T> {
-        return {
-            state: this,
-            formatFunc,
-            render: () => formatFunc(this._value),
-            toString: () => String(formatFunc(this._value))
-        };
     }
 }
 
