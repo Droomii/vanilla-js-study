@@ -11,7 +11,7 @@ function App() {
 
         const hi = Watcher('div', {}, (el) => {
             el.replaceChildren(num.value < 3 ? 'hi!!' : '');
-        }, 'hi');
+        }, {debug: 'hi'});
 
         return Watcher('button', {num}, (el, {num}) => {
             const children = [`${num}번 클릭함`, num.value < 5 ? hi : ''].filter(v => v);
@@ -26,7 +26,7 @@ function App() {
             `현재 path는 ${activeMenu}입니다.`,
             ...buttons
         );
-    }, 'root');
+    }, {root: true, debug: 'root'});
 }
 
 export default App;

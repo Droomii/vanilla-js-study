@@ -9,15 +9,19 @@ interface Watchlist {
     [key: string]: State<unknown>
 }
 
+interface WatcherOptions {
+    debug: string;
+    root: boolean;
+}
+
 function Watcher<States extends Watchlist, ElementType extends keyof HTMLElementTagNameMap>(
     element: ElementType,
     watchlist: States,
-    render: (el: HTMLElementTagNameMap[ElementType], states: States) => void, debug?: string): Node {
+    render: (el: HTMLElementTagNameMap[ElementType], states: States) => void, options?: Partial<WatcherOptions>): Node {
     const el = document.createElement(element) as HTMLElementTagNameMap[ElementType] & {cleanup: () => void;};
     el.cleanup = () => {
         console.log('cleanup', el);
         Object.values(watchlist).forEach(v => v.removeListener(renderFunc));
-        observer.disconnect();
     };
 
     let isRenderPrepared = false;
@@ -37,17 +41,20 @@ function Watcher<States extends Watchlist, ElementType extends keyof HTMLElement
 
     renderFunc.el = el;
     Object.values(watchlist).forEach(v => v.addListener(renderFunc));
-    const observer = new MutationObserver((entries) => {
-        debug && console.log('debug', debug);
-        entries.forEach(v => {
-            v.removedNodes.forEach(v => {
-                if (v.isConnected) return;
-                (v as unknown as {cleanup: () => void}).cleanup?.();
+
+    if (options?.root) {
+        const observer = new MutationObserver((entries) => {
+            options?.debug && console.log('debug', options.debug);
+            entries.forEach(v => {
+                v.removedNodes.forEach(v => {
+                    if (v.isConnected) return;
+                    (v as unknown as {cleanup: () => void}).cleanup?.();
+                });
             });
         });
-    });
 
-    observer.observe(el, {childList: true, subtree: true});
+        observer.observe(el, {childList: true, subtree: true});
+    }
 
     renderFunc();
     return el;
