@@ -1,11 +1,11 @@
-import {RenderFunction} from './Watcher';
+import {UpdateFunction} from './Watcher';
 
 const isFunction = <T>(val: T | ((val: T) => T)): val is (val: T) => T => {
     return typeof val === 'function';
 };
 
 class State<T> {
-    private _listeners: RenderFunction[] = [];
+    private _listeners: UpdateFunction<any>[] = [];
 
     constructor(
         private _value: T,
@@ -29,14 +29,14 @@ class State<T> {
         return this._value;
     }
 
-    addListener(...effects: RenderFunction[]) {
+    addListener(...effects: UpdateFunction<any>[]) {
         effects.forEach(v => {
             if (this._listeners.includes(v)) return;
             this._listeners.push(v);
         });
     }
 
-    removeListener(effect: RenderFunction) {
+    removeListener(effect: UpdateFunction<any>) {
         const idx = this._listeners.indexOf(effect);
         if (idx > -1) {
             this._listeners.splice(idx, 1);
